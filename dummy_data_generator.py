@@ -3,22 +3,69 @@ from faker import Faker
 import json
 import string
 import random
+import psycopg2
+import random
+from datetime import datetime
 
 fake = Faker('en_IN')
 
-# Function to generate dummy users
+
+#Function to connect to server and get site_ids
+def get_site_ids():
+    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password="", host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
+    cursor = connection.cursor()
+    
+    cursor.execute('select s.id from "14trees_old".sites s where s.name_marathi like \'Test Random Site%\' order by s.created_at desc limit 10')
+    site_ids =  [row[0] for row in cursor.fetchall()]
+   
+    connection.close()
+    return site_ids
+
+#Function to connect to server and get plot_ids
+def get_plot_ids():
+    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password="", host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
+    cursor = connection.cursor()
+    
+    cursor.execute('select p.id from "14trees_old".plots p where p.plot_id  like \'dummy_plot_id%\' order by p.created_at desc limit 100 ')
+    plot_ids =  [row[0] for row in cursor.fetchall()]
+    
+    connection.close()
+    return plot_ids
+
+#Function to connect to server and get plant_type_ids
+def get_plant_type_ids():
+    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password="", host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
+    cursor = connection.cursor()
+    
+    cursor.execute('select distinct pt.id  from "14trees_old".plant_types pt limit 10')
+    plant_type_ids =  [row[0] for row in cursor.fetchall()]
+    print(plant_type_ids)
+    connection.close()
+    return plant_type_ids
+
+
+#Function to generate dummy users
 def generate_dummy_users(num_records):
-    data = []
-    for _ in range(num_records):
-        record = {
-            'Name': fake.name(),         
-            'Phone': fake.basic_phone_number(),
-            'Email': fake.email(),
-            'Company': fake.company(),
-           
-        }
-        data.append(record)
-    return data
+    users = []
+     
+    for i in range(num_records):
+            record = {
+                
+                "name": "dummy-user "+ str(i+1),
+                "email": fake.email(),
+                "user_id": "dummy-user-id "+str(i+1) ,
+                "phone": None,
+                "birth_date": None,
+                "mongo_id": None,                
+                "status_message": None,
+                "last_system_updated_at": None,
+                "created_at": datetime.now().strftime('%D %H:%M:%S'),
+                "updated_at": datetime.now().strftime('%D %H:%M:%S')
+                            
+            }
+            users.append(record)
+    return users
+
 
 # Function to generate dummy sites
 def generate_dummy_sites(num_records):
@@ -71,63 +118,215 @@ def generate_dummy_sites(num_records):
         sites.append(record)
     return sites
 
+
+#Function to generate dummy plots
+def generate_dummy_plots(num_records):
+    plots = []
+    site_ids = get_site_ids()
+   
+    for each_site_id in site_ids: 
+        for i in range(num_records):
+            record = {
+                
+                "name": fake.name(),
+                "plot_id":"dummy_plot_id "+ str(each_site_id)+"-"+str(fake.random_int(min=1 , max=2500)) ,
+                "tags": None,
+                "boundaries": {},
+                "center": {},
+                "gat": None,
+                "status": None,
+                "land_type_mongo_id": None,
+                "category_monogo_id": None,
+                "land_type": None,
+                "category": fake.random_element(elements=['Foundation' , 'Public']),
+                "mongo_id": None,
+                "created_at": datetime.now().strftime('%D %H:%M:%S'),
+                "updated_at": datetime.now().strftime('%D %H:%M:%S'),
+                "site_id": each_site_id
+                
+            }
+            plots.append(record)
+    return plots
+
+
 # Function to generate dummy trees
 def generate_dummy_trees(num_records):
-    data = []
-    for _ in range(num_records):
-        record = {
+    trees = [] 
+    plot_ids = get_plot_ids()
+    plant_type_ids = get_plant_type_ids()
+    
+    for each_plot_id in plot_ids:
+        for i in range(num_records):
+            record = {
+                
+                "sapling_id": str(970000 + i + 1), 
+                "plant_type_id": int(random.choice(plant_type_ids)),
+                "plot_id": each_plot_id,
+                "images": None,
+                "tags": None,
+                "location": {},
+                "planted_by": 'DataAutomation',
+                "mapped_to_user": 3,
+                "mapped_to_group": 1,
+                "mapped_at": None,
+                "sponsored_by_user": 3,
+                "sponsored_by_group": 1,
+                "gifted_by": 3,
+                "gifted_to": 3,
+                "assigned_at": None,
+                "assigned_to": None,
+                "user_tree_images": None,
+                "mongo_id": None,
+                "tree_type": None,
+                "plot": None,
+                "description": None,
+                "event_id": None,
+                "memory_images": None,
+                "status": None,
+                "status_message":None,
+                "last_system_updated_at":None,
+                "created_at":datetime.now().strftime('%D %H:%M:%S'),
+                "updated_at":datetime.now().strftime('%D %H:%M:%S'), 
+                "tree_status":None
             
-            # "id": fake.random_int(min=100000, max=999999) ,
-            "sapling_id": "098000", # fix this: str(970000 + i)
-            "plant_type_id": 3,
-            "plot_id": 1,
-            "images": None,
-            "tags": None,
-            "location": {},
-            "planted_by": None,
-            "mapped_to_user": 3,
-            "mapped_to_group": 1,
-            "mapped_at": None,
-            "sponsored_by_user": 3,
-            "sponsored_by_group": 1,
-            "gifted_by": 3,
-            "gifted_to": 3,
-            "assigned_at": None,
-            "assigned_to": None,
-            "user_tree_images": None,
-            "mongo_id": None,
-            "tree_type": None,
-            "plot": None,
-            "description": None,
-            "event_id": None,
-            "memory_images": None,
-            "status": None,
-            "status_message":None,
-            "last_system_updated_at":None,
-            "created_at":None, # fix this
-            "updated_at":None, # fix this
-            "tree_status":None
-           
-        }
-        data.append(record)
-    return data
+            }
+            trees.append(record)
+    return trees
+
+#Function to generate dummy visits
+def generate_dummy_visits(num_records):
+    visits = []
+    site_ids = get_site_ids()
+    for i in range(num_records):
+            record = {
+                
+                "visit_name": "dummy-visit-"+str(i+1),
+                "visit_date": datetime.now().strftime('%D'),
+                "site_id": random.choice(site_ids),
+                "visit_type": fake.random_element(elements=['FAMILY' , 'CORPORATE'])
+                            
+            }
+            visits.append(record)
+    return visits
+
+
+#Function to generate dummy organisations
+def generate_dummy_organisations(num_records):
+    oraganisations = []
+   
+    for i in range(num_records):
+            record = {
+                
+                "name": "dummy-group-"+str(i+1),
+                "type": "corporate",
+                "description": None,
+                "created_at": datetime.now().strftime('%D %H:%M:%S'),
+                "updated_at": None
+                            
+            }
+            oraganisations.append(record)
+    return oraganisations
+
+# Function to generate dummy donations
+def generate_dummy_donations(num_records):
+    donations = [] 
+    
+    for i in range(num_records):
+            record = {
+                "Status": None,
+                "Timestamp": datetime.now().strftime('%D %H:%M:%S'),
+                "Name": None,
+                "Please mention number of trees you would like to sponsor": None,
+                "Please select your preference (if you want to spread your trees": None,
+                "I'm making my contribution via": None,
+                "Kindly upload a screenshot of payment confirmation (screenshot": None,
+                "PAN number needed to qualify for 80G benefit (and for audit an": None,
+                "Phone": None,
+                "Please share your e-mail address so that we can send you update": None,
+                "I'd like my trees to be planted in the following names": None,
+                "Comments, feedback, ideas for improvement.": None,
+                "Besides making a monetary contribution, I'd also like to": None,
+                "80g / 501 (c)/ FCRA matters": None,
+                "Please indicate if you would like to make your contribution in": None,
+                "(If you selected Foundation's land preserve) I'd like my trees": None,
+                "Email Address": None,
+                "r": None,
+                "Pledged": None,
+                "Amount received": None,
+                "Amount received for General Purpose": None,
+                "Trees paid": None,
+                "Payment received": None,
+                "Date received": None,
+                "Second installment": None,
+                "Land type": None,
+                "Zone": None,
+                "Grove": None,
+                "Assigned plot": None,
+                "Tree planted": None,
+                "Assigner's dashboard": None,
+                "Wire confirmation": None,
+                "Originator": None,
+                "Difference in no of trees paid and pledged": None,
+                "Donation receipt number": None,
+                "AMount as per DON file": None,
+                "Amount Paid": None,
+                "Empty": None,
+                "Base": None,
+                "Check": None,
+                "CA remarks": None,
+                "Action": None,
+                "Payment Status": None,
+                "Status remarks": None,
+                "Status_2": None,
+                "Donor Type": 'DataAutomation',
+                "Inventory Qty": None,
+                "Inventory Type": None,
+                "Remarks for inventory": None
+            }
+            donations.append(record)
+    return donations
+
+
 
 def convert_to_csv(records, file_name):
     df = pd.DataFrame(records)
-    df.to_csv(file_name, index=False)
+    df.to_csv(file_name, index=False,encoding='utf-8-sig')
     print(f'Input data saved to {file_name}')
 
 def main(): 
-    print("hey there") 
+    
     num_records = 10
 
+   
+    dummy_sites = generate_dummy_sites(num_records)
+    print(f'Dummy Sites Json: {json.dumps(dummy_sites, ensure_ascii=False, indent=4)}')
+    convert_to_csv(dummy_sites, 'dummy_sites.csv')
+    
+    # dummy_plots = generate_dummy_plots(num_records)
+    # # print('dummy plots data' ,dummy_plots)
+    # convert_to_csv(dummy_plots, 'dummy_plots-1.csv')
+
     # dummy_users = generate_dummy_users(num_records)
-    # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
+    # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
     # convert_to_csv(dummy_users, 'dummy_users.csv')
 
-    # dummy_sites = generate_dummy_sites(num_records)
-    # print(f'Dummy Sites Json: {json.dumps(dummy_sites, ensure_ascii=False, indent=4)}')
-    # convert_to_csv(dummy_sites, 'dummy_sites.csv')
+    # dummy_visits = generate_dummy_visits(num_records)
+    # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
+    # convert_to_csv(dummy_visits, 'dummy_visits.csv')
+    
+    # dummy_trees = generate_dummy_trees(num_records)
+    # # print('dummy trees data' ,dummy_trees)
+    # convert_to_csv(dummy_trees, 'dummy_trees-1.csv')
+    
+    # dummy_oraganisations = generate_dummy_organisations(num_records)
+    # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
+    # convert_to_csv(dummy_oraganisations, 'dummy_oraganisations.csv')
+    
+    # dummy_donations = generate_dummy_donations(num_records)
+    # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
+    # convert_to_csv(dummy_donations, 'dummy_donations.csv')
+
+    
 
 
 
