@@ -6,13 +6,14 @@ import random
 import psycopg2
 import random
 from datetime import datetime
+import os
 
 fake = Faker('en_IN')
 
 
 #Function to connect to server and get site_ids
 def get_site_ids():
-    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password="", host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
+    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password=os.environ['DB_PASSWORD'], host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
     cursor = connection.cursor()
     
     cursor.execute('select s.id from "14trees_old".sites s where s.name_marathi like \'Test Random Site%\' order by s.created_at desc limit 10')
@@ -129,7 +130,7 @@ def generate_dummy_plots(num_records):
             record = {
                 
                 "name": fake.name(),
-                "plot_id":"dummy_plot_id "+ str(each_site_id)+"-"+str(fake.random_int(min=1 , max=2500)) ,
+                "plot_id":"dummy-plot-id-"+ str(each_site_id)+"-"+str(fake.random_int(min=1 , max=2500)) ,
                 "tags": None,
                 "boundaries": {},
                 "center": {},
@@ -298,13 +299,13 @@ def main():
     num_records = 10
 
    
-    dummy_sites = generate_dummy_sites(num_records)
-    print(f'Dummy Sites Json: {json.dumps(dummy_sites, ensure_ascii=False, indent=4)}')
-    convert_to_csv(dummy_sites, 'dummy_sites.csv')
+    # dummy_sites = generate_dummy_sites(num_records)
+    # print(f'Dummy Sites Json: {json.dumps(dummy_sites, ensure_ascii=False, indent=4)}')
+    # convert_to_csv(dummy_sites, 'dummy_sites.csv')
     
-    # dummy_plots = generate_dummy_plots(num_records)
-    # # print('dummy plots data' ,dummy_plots)
-    # convert_to_csv(dummy_plots, 'dummy_plots-1.csv')
+    dummy_plots = generate_dummy_plots(num_records)
+    # print('dummy plots data' ,dummy_plots)
+    convert_to_csv(dummy_plots, 'dummy_plots.csv')
 
     # dummy_users = generate_dummy_users(num_records)
     # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
