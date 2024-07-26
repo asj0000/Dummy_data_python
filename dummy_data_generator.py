@@ -7,6 +7,7 @@ import psycopg2
 import random
 from datetime import datetime
 import os
+from delete_dummy_data import delete_dummy_data
 
 fake = Faker('en_IN')
 
@@ -152,11 +153,11 @@ def generate_dummy_plots(num_records):
         for i in range(num_records):
             record = {
                 
-                "name": fake.name(),
+                "name": "Test Random plot " + str(i+1),
                 "plot_id":"dummy-plot-id-"+ str(each_site_id)+"-"+str(fake.random_int(min=1 , max=2500)) ,
                 "tags": None,
-                "boundaries": {},
-                "center": {},
+                "boundaries": {"type": "Polygon", "coordinates": [[[18.92883906964203, 73.7769217462353], [18.92705962338517, 73.77601906599243], [18.92691470408016, 73.77663242954684], [18.92764441915284, 73.77778245391168], [18.92883906964203, 73.7769217462353]]]},
+                "center": {"type": "Point", "coordinates": [18.92883906964203, 73.7769217462353]},
                 "gat": None,
                 "status": None,
                 "land_type_mongo_id": None,
@@ -363,7 +364,7 @@ def main():
     # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
     # convert_to_csv(dummy_donations, 'dummy_donations.csv')
 
-    #destroy_dummy_data()
+    #delete_dummy_data()
 
     
 
