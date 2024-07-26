@@ -24,7 +24,7 @@ def get_site_ids():
 
 #Function to connect to server and get plot_ids
 def get_plot_ids():
-    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password="", host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
+    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password=os.environ['DB_PASSWORD'], host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
     cursor = connection.cursor()
     
     cursor.execute('select p.id from "14trees_old".plots p where p.plot_id  like \'dummy_plot_id%\' order by p.created_at desc limit 100 ')
@@ -35,7 +35,7 @@ def get_plot_ids():
 
 #Function to connect to server and get plant_type_ids
 def get_plant_type_ids():
-    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password="", host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
+    connection = psycopg2.connect(database="defaultdb", user="avnadmin", password=os.environ['DB_PASSWORD'], host="vivek-tree-vivek-tree.e.aivencloud.com", port=15050)    
     cursor = connection.cursor()
     
     cursor.execute('select distinct pt.id  from "14trees_old".plant_types pt limit 10')
@@ -106,6 +106,27 @@ def generate_dummy_sites(num_records):
         "Adivare",
         "Tekavadi (टेकवडी)"
     ]),
+    "area_acres": None,
+    "length_km": None,
+    "tree_count": None,
+    "unique_id": None,
+    "photo_album": None,
+    "grove_type": None,
+    "album": None,
+    "album_contains": None,
+    "status": None,
+    "remark": None,
+    "hosted_at": None,
+    "created_at": datetime.now().strftime('%D %H:%M:%S'),
+    "updated_at": datetime.now().strftime('%D %H:%M:%S'),
+    "consent_document_link": None,
+    "google_earth_link": None,
+    "trees_planted": None,
+    "site_key_1": None,
+    "site_key_2": None,
+    "account": None,
+    "data_errors": None,
+    "date_planted": None,
     "consent_letter": fake.random_element(elements=[
     "14T - संस्था पत्र",
     "14T - ग्राम पंचायत पत्र",
@@ -114,7 +135,9 @@ def generate_dummy_sites(num_records):
     "PLANTATION_ONLY",
     "FULL_MAINTENANCE", 
     "DISTRIBUTION_ONLY",
-])
+]),
+    "tags": None,
+    "komoot_file_link": None
 }
         sites.append(record)
     return sites
