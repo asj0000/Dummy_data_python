@@ -52,9 +52,9 @@ def generate_dummy_users(num_records):
     for i in range(num_records):
             record = {
                 
-                "name": "dummy-user "+ str(i+1),
+                "name": "Dummy User "+ str(i+1),
                 "email": fake.email(),
-                "user_id": "dummy-user-id "+str(i+1) ,
+                "user_id": "dummy-user-id-"+str(i+1) ,
                 "phone": None,
                 "birth_date": None,
                 "mongo_id": None,                
@@ -325,14 +325,27 @@ def main():
     # dummy_sites = generate_dummy_sites(num_records)
     # print(f'Dummy Sites Json: {json.dumps(dummy_sites, ensure_ascii=False, indent=4)}')
     # convert_to_csv(dummy_sites, 'dummy_sites.csv')
+
+    # export table_name=sites
+    # export file_name=dummy_sites.csv
+    # csvsql --db ${pg_str} --no-create --insert ${file_name} --db-schema "14trees_old" --tables ${table_name}
+
     
-    dummy_plots = generate_dummy_plots(num_records)
-    # print('dummy plots data' ,dummy_plots)
-    convert_to_csv(dummy_plots, 'dummy_plots.csv')
+    # dummy_plots = generate_dummy_plots(num_records)
+    # print(f'Dummy Plots Json: {json.dumps(dummy_plots, ensure_ascii=False, indent=4)}')
+    # convert_to_csv(dummy_plots, 'dummy_plots.csv')
+
+    # export table_name=plots
+    # export file_name=dummy_plots.csv
+    # csvsql --db ${pg_str} --no-create --insert ${file_name} --db-schema "14trees_old" --tables ${table_name}
 
     # dummy_users = generate_dummy_users(num_records)
     # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
     # convert_to_csv(dummy_users, 'dummy_users.csv')
+
+    # export table_name=users
+    # export file_name=dummy_users.csv
+    # csvsql --db ${pg_str} --no-create --insert ${file_name} --db-schema "14trees_old" --tables ${table_name}
 
     # dummy_visits = generate_dummy_visits(num_records)
     # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
@@ -349,6 +362,8 @@ def main():
     # dummy_donations = generate_dummy_donations(num_records)
     # # print(f'Dummy Users Json: {json.dumps(dummy_users)}')
     # convert_to_csv(dummy_donations, 'dummy_donations.csv')
+
+    #destroy_dummy_data()
 
     
 
