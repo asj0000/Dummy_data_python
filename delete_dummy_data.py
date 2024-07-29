@@ -103,7 +103,7 @@ def delete_dummy_data(conn, entity_name):
                
     elif (entity_name == 'tree_snapshots'):
           try:
-              cursor.execute('Delete FROM "14trees_2".trees_snapshots ts WHERE ts.user_id in (select u.id from "14trees_2".users u where u.name like \'dummy%\' order by u.created_at DESC limit 1000) ')   
+              cursor.execute('Delete FROM "14trees_2".trees_snapshots ts WHERE ts.user_id in (select u.id from "14trees_2".users u where u.name like \'Dummy%\' order by u.created_at DESC limit 1000) ')   
               print('Deleted dummy tree snapshots ')
           
           except Exception as e:  
