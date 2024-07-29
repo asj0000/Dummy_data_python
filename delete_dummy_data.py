@@ -66,6 +66,8 @@ def delete_dummy_data(conn, entity_name):
           
           except Exception as e:
              print(f'An error occured {e}')
+             
+            
 
     elif (entity_name == 'org_users'):
           try:
@@ -74,7 +76,39 @@ def delete_dummy_data(conn, entity_name):
           
           except Exception as e:
              print(f'An error occured {e}')
-             
+    
+    elif (entity_name == 'ponds'):
+          try:
+              cursor.execute('Delete FROM "14trees_2".ponds p WHERE p.name like \'Test Random Pond%\' ')   
+              print('Deleted dummy ponds ')
+          
+          except Exception as e:  
+               print(f'An error occured {e}')  
+               
+    elif (entity_name == 'pond_water_level'):
+          try:
+              cursor.execute('Delete from "14trees_2".pond_water_level pwl  where pwl.pond_id  in (select p.id from "14trees_2".ponds p where p.name like \'Test Random Pond%\' order by p.created_at desc limit 1000 )')   
+              print('Deleted dummy pond water level ')
+          
+          except Exception as e:
+             print(f'An error occured {e}')            
+               
+    elif (entity_name == 'visit_images'):
+          try:
+              cursor.execute('Delete FROM "14trees_2".ponds p WHERE p.name like \'Test Random Pond%\' ')   
+              print('Deleted dummy visit images ')
+          
+          except Exception as e:  
+               print(f'An error occured {e}')
+               
+    elif (entity_name == 'tree_snapshots'):
+          try:
+              cursor.execute('Delete FROM "14trees_2".trees_snapshots ts WHERE ts.user_id in (select u.id from "14trees_2".users u where u.name like \'dummy%\' order by u.created_at DESC limit 1000) ')   
+              print('Deleted dummy tree snapshots ')
+          
+          except Exception as e:  
+               print(f'An error occured {e}')     
+                                       
     else:
          print('Provide a valid entity name')
          return         

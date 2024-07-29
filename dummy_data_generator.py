@@ -73,6 +73,17 @@ def get_dummy_user_ids_from_db():
     connection.close()
     return user_ids
 
+#Function to connect to server and get pond_id
+def get_dummy_pond_ids_from_db():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    cursor.execute('select p.id from "14trees_2".ponds p where p."name" like \'Test Random Pond%\' order by p.created_at DESC limit 1000' )
+    pond_ids =  [row[0] for row in cursor.fetchall()]
+    print(user_ids)
+    connection.close()
+    return pond_ids
+
 #Function to connect to server and get visit_ids
 def get_dummy_visit_ids_from_db():
     connection = get_db_connection()
@@ -95,6 +106,17 @@ def get_dummy_org_ids_from_db():
     connection.close()
     return group_ids
 
+
+#Function to connect to server and get sapling id of dummy tree
+def get_dummy_sapling_id_of_dummy_tree():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    cursor.execute('select t.sapling_id from "14trees_2".trees t where t.planted_by=\'DataAutomation\' ')
+    sapling_ids =  [row[0] for row in cursor.fetchall()]
+    print(sapling_ids)
+    connection.close()
+    return sapling_ids
 
 #Function to generate dummy users
 def generate_dummy_users(num_records):
@@ -399,6 +421,83 @@ def generate_dummy_donations(num_records):
     return donations
 
 
+#Function to generate dummy visit users
+def generate_dummy_ponds_data(num_records):
+    ponds_data = []
+    
+    for i in range(num_records):
+       record = {
+            "name": "Test Random Pond "+str(i+1),
+            "tags": None,
+            "type": fake.random_element(elements=['Percolation' , 'Storage']),
+            "boundaries": {"type": "Polygon", "coordinates": []},
+            "images": None,
+            "length_ft": fake.random_int(min=50 , max=250),
+            "width_ft":  fake.random_int(min=50 , max=250),
+            "depth_ft":  fake.random_int(min=50 , max=250),
+            "mongo_id": None,
+            "created_at": datetime.now().strftime('%D %H:%M:%S'),
+            "updated_at": datetime.now().strftime('%D %H:%M:%S'),
+            "site_id": None
+       }
+       ponds_data.append(record)
+    
+    return ponds_data
+
+def generate_dummy_pond_water_level(num_records):
+    pond_water_level = []
+    pond_ids = get_dummy_pond_ids_from_db()
+    
+    for i in range(num_records):
+       record = {
+            "level_ft": fae.random_int(min=10 , max=30),
+            "user_id": None,
+            "pond_id": random.choice(pond_ids),
+            "image": None,
+            "mongo_id": None,
+            "mongo_user_id": None,
+            "updated_at": datetime.now().strftime('%D %H:%M:%S')
+       }
+       ponds_data.append(record)
+    
+    return ponds_data
+
+
+def generate_dummy_visit_images(num_records):
+    
+    visit_images = []
+    visit_ids = get_dummy_visit_ids_from_db()
+    
+    for i in range(num_records):
+       record = {
+            "image_url": "https://14treesplants.s3.ap-south-1.amazonaws.com/memories/Test%20Visit/2024-07-24T16%3A04%3A08.020Z.jpg",
+            "visit_id": random.choice(visit_ids),
+            "created_at": datetime.now().strftime('%D %H:%M:%S')
+       }
+       visit_images.append(record)
+    
+    return visit_images
+
+def generate_dummy_tree_snapshots(num_records):
+    
+    tree_sanpshots = []
+    sapling_ids = get_dummy_sapling_id_of_dummy_tree()
+    user_ids = get_dummy_user_ids_from_db()
+    
+    for i in range(num_records):
+       record = {
+                "user_id": random.choice(user_ids),
+                "sapling_id": random.choice(sapling_ids),
+                "image": None,
+                # "is_active": ,
+                "created_at": datetime.now().strftime('%D %H:%M:%S')       
+       }
+       
+       tree_sanpshots.append(record)
+    
+    return tree_sanpshots
+
+
 
 def convert_to_csv(records, file_name):
     df = pd.DataFrame(records)
@@ -417,7 +516,7 @@ def upload_csv_to_db(csv_file, db_url, db_port, dbuser, db_password, db_schema, 
     print("Error: ", err)
 
 def create_data():
-    num_records = 10
+    num_records = 1
    
     # dummy_sites = generate_dummy_sites(num_records)
     # print(f'Dummy Sites Json: {json.dumps(dummy_sites, ensure_ascii=False, indent=4)}')
@@ -464,19 +563,19 @@ def create_data():
     # convert_to_csv(dummy_trees, csv_file)
     # upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
     
-    dummy_organisations = generate_dummy_organisations(num_records)
-    print(f'Dummy Organisations Json: {json.dumps(dummy_organisations, ensure_ascii=False, indent=4)}')
-    csv_file = 'dummy_organisations.csv'
-    table_name = 'groups'
-    convert_to_csv(dummy_organisations, csv_file)
-    upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
+    # dummy_organisations = generate_dummy_organisations(num_records)
+    # print(f'Dummy Organisations Json: {json.dumps(dummy_organisations, ensure_ascii=False, indent=4)}')
+    # csv_file = 'dummy_organisations.csv'
+    # table_name = 'groups'
+    # convert_to_csv(dummy_organisations, csv_file)
+    # upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
 
-    dummy_org_users = generate_dummy_org_users(get_dummy_org_ids_from_db(), get_dummy_user_ids_from_db())
-    print(f'Dummy Org-Users Json: {json.dumps(dummy_org_users, ensure_ascii=False, indent=4)}')
-    csv_file = 'dummy_org_users.csv'
-    table_name = 'user_groups'
-    convert_to_csv(dummy_org_users, csv_file)
-    upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
+    # dummy_org_users = generate_dummy_org_users(get_dummy_org_ids_from_db(), get_dummy_user_ids_from_db())
+    # print(f'Dummy Org-Users Json: {json.dumps(dummy_org_users, ensure_ascii=False, indent=4)}')
+    # csv_file = 'dummy_org_users.csv'
+    # table_name = 'user_groups'
+    # convert_to_csv(dummy_org_users, csv_file)
+    # upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
     
     # dummy_donations = generate_dummy_donations(num_records)
     # print(f'Dummy Donations Json: {json.dumps(dummy_donations, ensure_ascii=False, indent=4)}')
@@ -484,6 +583,34 @@ def create_data():
     # table_name = 'donations'
     # convert_to_csv(dummy_donations, csv_file)
     # upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
+    
+    dummy_ponds = generate_dummy_ponds_data(num_records)
+    print(f'Dummy Plots Json: {json.dumps(dummy_ponds, ensure_ascii=False, indent=4)}')
+    csv_file = 'dummy_ponds.csv'
+    table_name = 'ponds'
+    convert_to_csv(dummy_ponds, csv_file)
+    upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
+    
+    dummy_pond_water_level = generate_dummy_pond_water_level(num_records)
+    print(f'Dummy Pond Water Level Json: {json.dumps(dummy_pond_water_level, ensure_ascii=False, indent=4)}')
+    csv_file = 'dummy_pond_water_level.csv'
+    table_name = 'pond_water_level'
+    convert_to_csv(dummy_pond_water_level, csv_file)
+    upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
+    
+    dummy_visit_images = generate_dummy_visit_images(num_records)
+    print(f'Dummy Visit Images Json: {json.dumps(dummy_visit_images, ensure_ascii=False, indent=4)}')
+    csv_file = 'dummy_visit_images.csv'
+    table_name = 'visit_images'
+    convert_to_csv(dummy_visit_images, csv_file)
+    upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
+    
+    dummy_tree_sanpshots = generate_dummy_tree_snapshots(num_records)
+    print(f'Dummy Tree Snapshots Json: {json.dumps(dummy_tree_sanpshots, ensure_ascii=False, indent=4)}')
+    csv_file = 'dummy_tree_sanpshots.csv'
+    table_name = 'trees_snapshots'
+    convert_to_csv(dummy_tree_sanpshots, csv_file)
+    upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
 
 def delete_data():
     conn = get_db_connection()
@@ -496,11 +623,15 @@ def delete_data():
     delete_dummy_data(conn, 'users')
     # delete_dummy_data(conn, 'donations')
     delete_dummy_data(conn, 'organisations')
+    delete_dummy_data(conn, 'ponds')
+    delete_dummy_data(conn, 'pond_water_level')
+    delete_dummy_data(conn, 'visit_images')
+    delete_dummy_data(conn, 'tree_snapshots')
     conn.close()
 
 def main(): 
-    delete_data()
-    # create_data()
+    # delete_data()
+    create_data()
     # get_dummy_user_ids_from_db()
     
 main()
