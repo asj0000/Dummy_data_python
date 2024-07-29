@@ -621,13 +621,14 @@ def delete_data():
     delete_dummy_data(conn, 'visits')
     delete_dummy_data(conn,'sites')
     delete_dummy_data(conn, 'org_users')
+    delete_dummy_data(conn, 'tree_snapshots')
     delete_dummy_data(conn, 'users')
     # delete_dummy_data(conn, 'donations')
     delete_dummy_data(conn, 'organisations')
     delete_dummy_data(conn, 'ponds')
     delete_dummy_data(conn, 'pond_water_level')
     delete_dummy_data(conn, 'visit_images')
-    delete_dummy_data(conn, 'tree_snapshots')
+   
     conn.close()
 
 def main(): 
