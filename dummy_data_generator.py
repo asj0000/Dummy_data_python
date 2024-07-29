@@ -618,6 +618,7 @@ def delete_data():
     delete_dummy_data(conn, 'trees')
     delete_dummy_data(conn, 'plots')
     delete_dummy_data(conn, 'visit_users')
+    delete_dummy_data(conn, 'visit_images')
     delete_dummy_data(conn, 'visits')
     delete_dummy_data(conn,'sites')
     delete_dummy_data(conn, 'org_users')
@@ -625,15 +626,13 @@ def delete_data():
     delete_dummy_data(conn, 'users')
     # delete_dummy_data(conn, 'donations')
     delete_dummy_data(conn, 'organisations')
-    delete_dummy_data(conn, 'ponds')
     delete_dummy_data(conn, 'pond_water_level')
-    delete_dummy_data(conn, 'visit_images')
-   
+    delete_dummy_data(conn, 'ponds')
     conn.close()
 
 def main(): 
-    # delete_data()
-    create_data()
+    delete_data()
+    # create_data()
     # get_dummy_user_ids_from_db()
     
 main()
