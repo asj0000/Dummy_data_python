@@ -95,7 +95,7 @@ def delete_dummy_data(conn, entity_name):
                
     elif (entity_name == 'visit_images'):
           try:
-              cursor.execute('Delete FROM "14trees_2".ponds p WHERE p.name like \'Test Random Pond%\' ')   
+              cursor.execute('DELETE FROM "14trees_2".visit_images  vi where vi.visit_id  in (select v.id from "14trees_2".visits  v where v.visit_name like \'Dummy%\' order by v.created_at DESC limit 1000) ')   
               print('Deleted dummy visit images ')
           
           except Exception as e:  
