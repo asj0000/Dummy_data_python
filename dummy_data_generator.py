@@ -80,7 +80,7 @@ def get_dummy_pond_ids_from_db():
     
     cursor.execute('select p.id from "14trees_2".ponds p where p."name" like \'Test Random Pond%\' order by p.created_at DESC limit 1000' )
     pond_ids =  [row[0] for row in cursor.fetchall()]
-    print(user_ids)
+    print(pond_ids)
     connection.close()
     return pond_ids
 
@@ -430,7 +430,7 @@ def generate_dummy_ponds_data(num_records):
             "name": "Test Random Pond "+str(i+1),
             "tags": None,
             "type": fake.random_element(elements=['Percolation' , 'Storage']),
-            "boundaries": {"type": "Polygon", "coordinates": []},
+            "boundaries": '{"type": "Polygon", "coordinates": []}',
             "images": None,
             "length_ft": fake.random_int(min=50 , max=250),
             "width_ft":  fake.random_int(min=50 , max=250),
@@ -450,7 +450,7 @@ def generate_dummy_pond_water_level(num_records):
     
     for i in range(num_records):
        record = {
-            "level_ft": fae.random_int(min=10 , max=30),
+            "level_ft": fake.random_int(min=10 , max=30),
             "user_id": None,
             "pond_id": random.choice(pond_ids),
             "image": None,
@@ -458,9 +458,9 @@ def generate_dummy_pond_water_level(num_records):
             "mongo_user_id": None,
             "updated_at": datetime.now().strftime('%D %H:%M:%S')
        }
-       ponds_data.append(record)
+       pond_water_level.append(record)
     
-    return ponds_data
+    return pond_water_level
 
 
 def generate_dummy_visit_images(num_records):
@@ -488,9 +488,10 @@ def generate_dummy_tree_snapshots(num_records):
        record = {
                 "user_id": random.choice(user_ids),
                 "sapling_id": random.choice(sapling_ids),
-                "image": None,
-                # "is_active": ,
-                "created_at": datetime.now().strftime('%D %H:%M:%S')       
+                "image": "https://14treesplants.s3.ap-south-1.amazonaws.com/trees/998877_2024-07-08T10%3A41%3A50.671Z.jpg",
+                "is_active": 1,
+                "created_at": datetime.now().strftime('%D %H:%M:%S'),
+                "image_date": datetime.now().strftime('%D %H:%M:%S')              
        }
        
        tree_sanpshots.append(record)
@@ -607,7 +608,7 @@ def create_data():
     
     dummy_tree_sanpshots = generate_dummy_tree_snapshots(num_records)
     print(f'Dummy Tree Snapshots Json: {json.dumps(dummy_tree_sanpshots, ensure_ascii=False, indent=4)}')
-    csv_file = 'dummy_tree_sanpshots.csv'
+    csv_file = 'dummy_tree_snapshots.csv'
     table_name = 'trees_snapshots'
     convert_to_csv(dummy_tree_sanpshots, csv_file)
     upload_csv_to_db(csv_file, db_url, db_port, db_user, db_password,db_schema, table_name)
